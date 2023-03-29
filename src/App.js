@@ -5,10 +5,17 @@ import Register from "./Register";
 import NoMatchPage from "./NoMatchPage";
 import Dashboard from "./Dashboard";
 import NavBar from "./NavBar";
+import { UserContext } from "./UserContext";
+import { useState } from "react";
 
 const App = () => {
+  let [user, setUser] = useState({
+    isLoggedIn: false,
+    currentUserId: null,
+    currentUserName: null,
+  });
   return (
-    <>
+    <UserContext.Provider value={{ user, setUser }}>
       <NavBar />
       <div className="container-fluid">
         <Routes>
@@ -18,7 +25,7 @@ const App = () => {
           <Route path="*" element={<NoMatchPage />} />
         </Routes>
       </div>
-    </>
+    </UserContext.Provider>
   );
 };
 

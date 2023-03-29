@@ -1,7 +1,11 @@
-import React from "react";
+import React, { useContext } from "react";
 import { NavLink } from "react-router-dom";
+import { UserContext } from "./UserContext";
 
 let NavBar = () => {
+  let userContext = useContext(UserContext);
+  let userName = userContext.user.currentUserName;
+  let loggedIn = userContext.user.isLoggedIn;
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark navbar-style">
       <a className="navbar-brand" href="/#">
@@ -21,20 +25,29 @@ let NavBar = () => {
 
       <div className="collapse navbar-collapse" id="navbarSupportedContent">
         <ul className="navbar-nav mr-auto">
-          <li className="nav-item">
-            <NavLink
-              className="nav-link"
-              to="/dashboard"
-              activeclassname="active"
-            >
-              <i className="fa fa-dashboard"></i> Dashboard
-            </NavLink>
-          </li>
-          <li>
-            <NavLink className="nav-link" to="/" activeclassname="active">
-              Login
-            </NavLink>
-          </li>
+          {loggedIn ? (
+            <li className="nav-item">
+              <NavLink
+                className="nav-link"
+                to="/dashboard"
+                activeclassname="active"
+              >
+                <i className="fa fa-dashboard"></i> Dashboard
+              </NavLink>
+            </li>
+          ) : (
+            ""
+          )}
+          {!loggedIn ? (
+            <li>
+              <NavLink className="nav-link" to="/" activeclassname="active">
+                Login
+              </NavLink>
+            </li>
+          ) : (
+            ""
+          )}
+
           <li>
             <NavLink
               className="nav-link"
@@ -59,7 +72,8 @@ let NavBar = () => {
                 aria-haspopup="true"
                 aria-expanded="false"
               >
-                <i className="fa fa-user-circle"></i>User
+                <i className="fa fa-user-circle m-1"></i>
+                {userName}
               </a>
               <div className="dropdown-menu" aria-labelledby="navbarDropdown">
                 <a className="dropdown-item" href="/#">

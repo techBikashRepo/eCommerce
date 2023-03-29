@@ -1,9 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { UserContext } from "./UserContext";
 
 const Login = () => {
   var [email, setEmail] = useState("");
   var [password, setPassword] = useState("");
+
+  let userContext = useContext(UserContext);
+
   let [errors, setErrors] = useState({
     email: [],
     password: [],
@@ -72,6 +76,12 @@ const Login = () => {
       if (response.ok) {
         let responseBody = await response.json();
         if (responseBody.length > 0) {
+          userContext.setUser({
+            ...userContext.user,
+            isLoggedIn: true,
+            currentUserId: responseBody[0].id,
+            currentUserName: responseBody[0].fullName,
+          });
           navigate("/dashboard");
         } else {
           setLoginMessage(
