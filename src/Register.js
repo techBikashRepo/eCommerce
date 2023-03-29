@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 let Register = () => {
   let [state, setState] = useState({
@@ -43,7 +44,7 @@ let Register = () => {
   });
 
   let [message, setMessage] = useState("");
-
+  const navigate = useNavigate();
   //validate
   let validate = () => {
     let errorsData = {};
@@ -72,7 +73,7 @@ let Register = () => {
       errorsData.password.push("Password can't be blank");
     }
 
-    //email regex
+    //password regex
     const validPasswordRegex = /((?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,15})/;
     if (state.password) {
       if (!validPasswordRegex.test(state.password)) {
@@ -156,6 +157,7 @@ let Register = () => {
         setMessage(
           <span className="text-success">Successfully Registered</span>
         );
+        navigate("/dashboard");
       } else {
         setMessage(
           <span className="text-danger">Errors in database connection</span>
