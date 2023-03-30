@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
+import { UserContext } from "./UserContext";
 import { useNavigate } from "react-router-dom";
 
 let Register = () => {
+  let userContext = useContext(UserContext);
   let [state, setState] = useState({
     email: "",
     password: "",
@@ -154,9 +156,16 @@ let Register = () => {
       });
 
       if (response.ok) {
+        let responseBody = await response.json();
         setMessage(
           <span className="text-success">Successfully Registered</span>
         );
+        userContext.setUser({
+          ...userContext.user,
+          isLoggedIn: true,
+          currentUserId: responseBody.id,
+          currentUserName: responseBody.fullName,
+        });
         navigate("/dashboard");
       } else {
         setMessage(

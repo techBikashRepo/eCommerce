@@ -1,11 +1,23 @@
 import React, { useContext } from "react";
 import { NavLink } from "react-router-dom";
 import { UserContext } from "./UserContext";
+import { useNavigate } from "react-router-dom";
 
 let NavBar = () => {
   let userContext = useContext(UserContext);
   let userName = userContext.user.currentUserName;
   let loggedIn = userContext.user.isLoggedIn;
+  const navigate = useNavigate();
+  let onOutClick = (event) => {
+    event.preventDefault();
+    userContext.setUser({
+      ...userContext.user,
+      isLoggedIn: false,
+      currentUserId: null,
+      currentUserName: null,
+    });
+    navigate("/");
+  };
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark navbar-style">
       <a className="navbar-brand" href="/#">
@@ -48,41 +60,49 @@ let NavBar = () => {
             ""
           )}
 
-          <li>
-            <NavLink
-              className="nav-link"
-              to="/register"
-              activeclassname="active"
-            >
-              Register
-            </NavLink>
-          </li>
+          {!loggedIn ? (
+            <li>
+              <NavLink
+                className="nav-link"
+                to="/register"
+                activeclassname="active"
+              >
+                Register
+              </NavLink>
+            </li>
+          ) : (
+            ""
+          )}
         </ul>
 
         {/* right box starts */}
-        <div style={{ marginRight: 100 }}>
-          <ul className="navbar-nav">
-            <li className="nav-item dropdown">
-              <a
-                className="nav-link dropdown-toggle"
-                href="/#"
-                id="navbarDropdown"
-                role="button"
-                data-toggle="dropdown"
-                aria-haspopup="true"
-                aria-expanded="false"
-              >
-                <i className="fa fa-user-circle m-1"></i>
-                {userName}
-              </a>
-              <div className="dropdown-menu" aria-labelledby="navbarDropdown">
-                <a className="dropdown-item" href="/#">
-                  Logout
+        {loggedIn ? (
+          <div style={{ marginRight: 100 }}>
+            <ul className="navbar-nav">
+              <li className="nav-item dropdown">
+                <a
+                  className="nav-link dropdown-toggle"
+                  href="/#"
+                  id="navbarDropdown"
+                  role="button"
+                  data-toggle="dropdown"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                >
+                  <i className="fa fa-user-circle m-1"></i>
+                  {userName}
                 </a>
-              </div>
-            </li>
-          </ul>
-        </div>
+                <div className="dropdown-menu" aria-labelledby="navbarDropdown">
+                  <a className="dropdown-item" href="/#" onClick={onOutClick}>
+                    Logout
+                  </a>
+                </div>
+              </li>
+            </ul>
+          </div>
+        ) : (
+          ""
+        )}
         {/* right box ends */}
       </div>
     </nav>

@@ -121,6 +121,16 @@
       "country": "2",
       "receiveNewsLetters": true,
       "id": 3
+    },
+    {
+      "email": "aarav@gmail.com",
+      "password": "Aarav@123",
+      "fullName": "Aarav Shaw",
+      "dateOfBirth": "2023-03-28",
+      "gender": "male",
+      "country": "4",
+      "receiveNewsLetters": true,
+      "id": 4
     }
   ],
   "orders": [
