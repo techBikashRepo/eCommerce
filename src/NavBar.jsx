@@ -50,6 +50,21 @@ let NavBar = () => {
           ) : (
             ""
           )}
+
+          {loggedIn ? (
+            <li className="nav-item">
+              <NavLink
+                className="nav-link"
+                to="/store"
+                activeclassname="active"
+              >
+                <i className="fa fa-shopping-bag"></i> Store
+              </NavLink>
+            </li>
+          ) : (
+            ""
+          )}
+
           {!loggedIn ? (
             <li>
               <NavLink className="nav-link" to="/" activeclassname="active">

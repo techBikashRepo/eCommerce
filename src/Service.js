@@ -18,3 +18,25 @@ export const ProductService = {
     });
   },
 };
+
+export const BrandService = {
+  fetchBrands: () => {
+    return fetch("http://localhost:5000/brands", {
+      method: "GET",
+    });
+  },
+  getBrandByBrandId: (brands, brandId) => {
+    return brands.find((brand) => (brand.id = brandId));
+  },
+};
+
+export const CategoryService = {
+  fetchCategories: () => {
+    return fetch(`http://localhost:5000/categories`, {
+      method: "GET",
+    });
+  },
+  getCategoryByCategoryId: (categories, categoryId) => {
+    return categories.find((category) => (category.id = categoryId));
+  },
+};
