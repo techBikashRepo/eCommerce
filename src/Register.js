@@ -165,6 +165,7 @@ let Register = () => {
           isLoggedIn: true,
           currentUserId: responseBody.id,
           currentUserName: responseBody.fullName,
+          currentUserRole: responseBody.role,
         });
         navigate("/dashboard");
       } else {

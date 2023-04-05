@@ -1,75 +1,166 @@
 import React, { useState, useContext, useEffect } from "react";
 import { UserContext } from "./UserContext";
-import { BrandService, CategoryService, ProductService } from "./Service";
+import { BrandsService, CategoriesService, ProductsService } from "./Service";
+import Product from "./Product";
 
-const Store = () => {
-  let userContext = useContext(UserContext);
-  //   let userName = userContext.user.currentUserName;
+function Store() {
+  //state
   let [brands, setBrands] = useState([]);
   let [categories, setCategories] = useState([]);
   let [products, setProducts] = useState([]);
+  let [productsToShow, setProductsToShow] = useState([]);
+  let [search, setSearch] = useState("");
+
+  //get user context
+  let userContext = useContext(UserContext);
+
   useEffect(() => {
     (async () => {
-      //get brand from database
-      let brandsResponse = await BrandService.fetchBrands();
+      //get brands from db
+      let brandsResponse = await BrandsService.fetchBrands();
       let brandsResponseBody = await brandsResponse.json();
       brandsResponseBody.forEach((brand) => {
         brand.isChecked = true;
       });
       setBrands(brandsResponseBody);
 
-      //get caterogies from database
-      let categoriesResponse = await CategoryService.fetchCategories();
+      //get categories from db
+      let categoriesResponse = await CategoriesService.fetchCategories();
       let categoriesResponseBody = await categoriesResponse.json();
       categoriesResponseBody.forEach((category) => {
         category.isChecked = true;
       });
       setCategories(categoriesResponseBody);
 
-      // Get Products from Database
-      let productsResponse = await ProductService.fetchProducts();
+      //get products from db
+      let productsResponse = await fetch(
+        `http://localhost:5000/products?productName_like=${search}`,
+        { method: "GET" }
+      );
       let productsResponseBody = await productsResponse.json();
       if (productsResponse.ok) {
         productsResponseBody.forEach((product) => {
-          // Set Brand
-          product.brand = BrandService.getBrandByBrandId(
-            brands,
+          //set brand
+          product.brand = BrandsService.getBrandByBrandId(
+            brandsResponseBody,
             product.brandId
+          );
+
+          //set category
+          product.category = CategoriesService.getCategoryByCategoryId(
+            categoriesResponseBody,
+            product.categoryId
           );
           product.isOrdered = false;
         });
-      }
-      setProducts(productsResponseBody);
-    })();
-  }, []);
 
-  // Update BrandsIsChecked
+        setProducts(productsResponseBody);
+        setProductsToShow(productsResponseBody);
+        document.title = "Store - eCommerce";
+      }
+    })();
+  }, [search]);
+
+  //updateBrandIsChecked
   let updateBrandIsChecked = (id) => {
     let brandsData = brands.map((brd) => {
       if (brd.id === id) brd.isChecked = !brd.isChecked;
       return brd;
     });
+
     setBrands(brandsData);
+    updateProductsToShow();
   };
 
-  // Update CategoriesIsChecked
+  //updateCategoryIsChecked
   let updateCategoryIsChecked = (id) => {
     let categoryData = categories.map((cat) => {
       if (cat.id === id) cat.isChecked = !cat.isChecked;
       return cat;
     });
+
     setCategories(categoryData);
+    updateProductsToShow();
   };
 
+  //updateProductsToShow
+  let updateProductsToShow = () => {
+    setProductsToShow(
+      products
+        .filter((prod) => {
+          return (
+            categories.filter(
+              (category) =>
+                category.id === prod.categoryId && category.isChecked
+            ).length > 0
+          );
+        })
+        .filter((prod) => {
+          return (
+            brands.filter(
+              (brand) => brand.id === prod.brandId && brand.isChecked
+            ).length > 0
+          );
+        })
+    );
+  };
+
+  //When the user clicks on Add to Cart function
+  let onAddToCartClick = (prod) => {
+    (async () => {
+      let newOrder = {
+        userId: userContext.user.currentUserId,
+        productId: prod.id,
+        quantity: 1,
+        isPaymentCompleted: false,
+      };
+
+      let orderResponse = await fetch(`http://localhost:5000/orders`, {
+        method: "POST",
+        body: JSON.stringify(newOrder),
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (orderResponse.ok) {
+        //isOrdered = true
+        let prods = products.map((p) => {
+          if (p.id === prod.id) p.isOrdered = true;
+          return p;
+        });
+
+        setProducts(prods);
+        updateProductsToShow();
+      } else {
+        console.log(orderResponse);
+      }
+    })();
+  };
   return (
     <div>
       <div className="row py-3 header">
         <div className="col-lg-3">
           <h4>
-            <i className="fa fa-shopping-bag"></i> Store
+            <i className="fa fa-shopping-bag"></i> Store{" "}
+            <span className="badge badge-secondary">
+              {productsToShow.length}
+            </span>
           </h4>
         </div>
+
+        <div className="col-lg-9">
+          <input
+            type="search"
+            value={search}
+            placeholder="Search"
+            className="form-control"
+            autoFocus="autofucs"
+            onChange={(event) => {
+              setSearch(event.target.value);
+            }}
+          />
+        </div>
       </div>
+
       <div className="row">
         <div className="col-lg-3 py-2">
           <div className="my-2">
@@ -114,11 +205,11 @@ const Store = () => {
                       onChange={() => {
                         updateCategoryIsChecked(category.id);
                       }}
-                      id={`brand${category.id}`}
+                      id={`category${category.id}`}
                     />
                     <label
                       className="form-check-label"
-                      htmlFor={`brand${category.id}`}
+                      htmlFor={`category${category.id}`}
                     >
                       {category.categoryName}
                     </label>
@@ -128,14 +219,20 @@ const Store = () => {
             </ul>
           </div>
         </div>
-        <div className="col-lg-9">
-          <div>{JSON.stringify(brands)}</div>
-          <div>{JSON.stringify(categories)}</div>
-          <div>{JSON.stringify(products)}</div>
+        <div className="col-lg-9 py-2">
+          <div className="row">
+            {productsToShow.map((prod) => (
+              <Product
+                key={prod.id}
+                product={prod}
+                onAddToCartClick={onAddToCartClick}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </div>
   );
-};
+}
 
 export default Store;

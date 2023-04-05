@@ -81,6 +81,7 @@ const Login = () => {
             isLoggedIn: true,
             currentUserId: responseBody[0].id,
             currentUserName: responseBody[0].fullName,
+            currentUserRole: responseBody[0].role,
           });
           navigate("/dashboard");
         } else {

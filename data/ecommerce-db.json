@@ -110,7 +110,8 @@
       "dateOfBirth": "2000-12-15",
       "gender": "male",
       "country": "UK",
-      "receiveNewsLetters": true
+      "receiveNewsLetters": true,
+      "role": "user"
     },
     {
       "email": "1985.bikash.shaw@gmail.com",
@@ -120,7 +121,8 @@
       "gender": "male",
       "country": "2",
       "receiveNewsLetters": true,
-      "id": 3
+      "id": 3,
+      "role": "user"
     },
     {
       "email": "aarav@gmail.com",
@@ -130,7 +132,19 @@
       "gender": "male",
       "country": "4",
       "receiveNewsLetters": true,
-      "id": 4
+      "id": 4,
+      "role": "user"
+    },
+    {
+      "email": "admin@gmail.com",
+      "password": "Admin@123",
+      "fullName": "Admin Shaw",
+      "dateOfBirth": "2023-03-28",
+      "gender": "male",
+      "country": "4",
+      "receiveNewsLetters": true,
+      "id": 4,
+      "role": "admin"
     }
   ],
   "orders": [
@@ -154,6 +168,20 @@
       "userId": 1,
       "quantity": 1,
       "isPaymentCompleted": false
+    },
+    {
+      "userId": 4,
+      "productId": 2,
+      "quantity": 1,
+      "isPaymentCompleted": false,
+      "id": 4
+    },
+    {
+      "userId": null,
+      "productId": 2,
+      "quantity": 1,
+      "isPaymentCompleted": false,
+      "id": 5
     }
   ]
 }

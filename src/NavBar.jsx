@@ -8,13 +8,14 @@ let NavBar = () => {
   let userName = userContext.user.currentUserName;
   let loggedIn = userContext.user.isLoggedIn;
   const navigate = useNavigate();
-  let onOutClick = (event) => {
+  let onLogoutClick = (event) => {
     event.preventDefault();
     userContext.setUser({
       ...userContext.user,
       isLoggedIn: false,
       currentUserId: null,
       currentUserName: null,
+      currentUserRole: null,
     });
     navigate("/");
   };
@@ -108,7 +109,11 @@ let NavBar = () => {
                   {userName}
                 </a>
                 <div className="dropdown-menu" aria-labelledby="navbarDropdown">
-                  <a className="dropdown-item" href="/#" onClick={onOutClick}>
+                  <a
+                    className="dropdown-item"
+                    href="/#"
+                    onClick={onLogoutClick}
+                  >
                     Logout
                   </a>
                 </div>

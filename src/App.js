@@ -14,6 +14,7 @@ const App = () => {
     isLoggedIn: false,
     currentUserId: null,
     currentUserName: null,
+    currentUserRole: null,
   });
   return (
     <UserContext.Provider value={{ user, setUser }}>

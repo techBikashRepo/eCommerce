@@ -1,7 +1,7 @@
 import { useEffect, useContext, useState, useCallback } from "react";
 import { UserContext } from "./UserContext";
 import Order from "./Order";
-import { OrderService, ProductService } from "./Service";
+import { OrderService, ProductsService } from "./Service";
 
 const Dashboard = () => {
   let userContext = useContext(UserContext);
@@ -21,13 +21,13 @@ const Dashboard = () => {
       let ordersResponseBody = await ordersResponse.json();
 
       //get all data from products
-      let productsResponse = await ProductService.fetchProducts();
+      let productsResponse = await ProductsService.fetchProducts();
       if (productsResponse.ok) {
         let productsResponseBody = await productsResponse.json();
 
         //read all orders data
         ordersResponseBody.forEach((order) => {
-          order.product = ProductService.getProductByProductId(
+          order.product = ProductsService.getProductByProductId(
             productsResponseBody,
             order.productId
           );
