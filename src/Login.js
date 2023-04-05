@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { UserContext } from "./UserContext";
 
 const Login = () => {
-  var [email, setEmail] = useState("");
-  var [password, setPassword] = useState("");
+  var [email, setEmail] = useState("admin@gmail.com");
+  var [password, setPassword] = useState("Admin@123");
 
   let userContext = useContext(UserContext);
 
@@ -83,7 +83,12 @@ const Login = () => {
             currentUserName: responseBody[0].fullName,
             currentUserRole: responseBody[0].role,
           });
-          navigate("/dashboard");
+
+          if (responseBody[0].role === "user") {
+            navigate("/dashboard");
+          } else {
+            navigate("/products");
+          }
         } else {
           setLoginMessage(
             <span className="text-danger">Invalid Login Credential</span>

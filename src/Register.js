@@ -12,6 +12,7 @@ let Register = () => {
     gender: "",
     country: "",
     receiveNewsLetters: "",
+    role: "user",
   });
 
   let [countries] = useState([

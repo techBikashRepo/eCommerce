@@ -6,6 +6,7 @@ import NoMatchPage from "./NoMatchPage";
 import Dashboard from "./Dashboard";
 import NavBar from "./NavBar";
 import Store from "./Store";
+import ProductsList from "./ProductsList";
 import { UserContext } from "./UserContext";
 import { useState } from "react";
 
@@ -25,6 +26,7 @@ const App = () => {
           <Route path="/register" element={<Register />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/store" element={<Store />} />
+          <Route path="/products" element={<ProductsList />} />
           <Route path="*" element={<NoMatchPage />} />
         </Routes>
       </div>
