@@ -1,21 +1,31 @@
 import React, { useState, useEffect } from "react";
-import { ProductsService, CategoriesService, BrandsService } from "./Service";
+import { CategoriesService, BrandsService, SortService } from "./Service";
 
 const ProductsList = () => {
   let [search, setSearch] = useState("");
   let [products, setProducts] = useState([]);
+  let [sortBy, setSortBy] = useState("productName");
+  let [sortOrder, setSortOrder] = useState("ASC");
+  let [originalProducts, setOriginalProducts] = useState([]);
+  let [brands, setBrands] = useState([]);
+  let [selectedBrand, setSelectedBrand] = useState("");
 
   useEffect(() => {
     (async () => {
       //get Brands Data
       let brandsResponse = await BrandsService.fetchBrands();
       let brandsResponseBody = await brandsResponse.json();
+      setBrands(brandsResponseBody);
 
       //get Categories Data
       let categoriesResponse = await CategoriesService.fetchCategories();
       let categoriesResponseBody = await categoriesResponse.json();
 
-      let productsResponse = await ProductsService.fetchProducts();
+      //get data from product Database
+      let productsResponse = await fetch(
+        `http://localhost:5000/products?productName_like=${search}&_sort=productName&_order=ASC `,
+        { methods: "GET" }
+      );
       let productsResponseBody = await productsResponse.json();
 
       // Set Category property in each product
@@ -35,9 +45,58 @@ const ProductsList = () => {
       });
 
       setProducts(productsResponseBody);
-      console.log(products);
+      setOriginalProducts(productsResponseBody);
     })();
-  }, []);
+  }, [search]);
+
+  // Get filtered Brands Name
+  let filteredProducts = (() => {
+    return originalProducts.filter(
+      (prod) => prod.brand.brandName.indexOf(selectedBrand) >= 0
+    );
+  })();
+
+  // When user clicks on Column Name to sort
+  let onSortColumnNameClick = (event, columnName) => {
+    event.preventDefault();
+    setSortBy(columnName);
+    let negatedSortOrder = sortOrder === "ASC" ? "DESC" : "ASC";
+    setSortOrder(negatedSortOrder);
+  };
+
+  //Executes on each change of filteredBrands, sortBy or sortOrder
+  useEffect(() => {
+    setProducts(
+      SortService.getSortedArray(filteredProducts, sortBy, sortOrder)
+    );
+  }, [filteredProducts, sortBy, sortOrder]);
+
+  // render columnName
+  let getColumnHeader = (columnName, displayName) => {
+    return (
+      <>
+        <a
+          href="/#"
+          onClick={(event) => {
+            onSortColumnNameClick(event, columnName);
+          }}
+        >
+          {displayName}
+        </a>{" "}
+        {sortBy === columnName && sortOrder === "ASC" ? (
+          <i className="fa fa-sort-up"></i>
+        ) : (
+          ""
+        )}
+        {sortBy === columnName && sortOrder === "DESC" ? (
+          <i className="fa fa-sort-down"></i>
+        ) : (
+          ""
+        )}
+      </>
+    );
+  };
+
   return (
     <div className="row">
       <div className="col-12">
@@ -69,23 +128,28 @@ const ProductsList = () => {
             <table className="table">
               <thead>
                 <tr>
-                  <th>#</th>
-                  <th>Product Name</th>
-                  <th>Price</th>
-                  <th>Brand</th>
-                  <th>Category</th>
-                  <th>Rating</th>
+                  <th>{getColumnHeader("productName", "Product Name")}</th>
+                  <th>{getColumnHeader("price", "Price")}</th>
+                  <th>{getColumnHeader("brand", "Brand")}</th>
+                  <th>{getColumnHeader("category", "Category")}</th>
+                  <th>{getColumnHeader("rating", "Rating")}</th>
                 </tr>
               </thead>
               <tbody>
                 {products.map((prod) => (
                   <tr key={prod.id}>
-                    <td>{prod.id}</td>
                     <td>{prod.productName}</td>
                     <td>{prod.price}</td>
                     <td>{prod.brand.brandName}</td>
                     <td>{prod.category.categoryName}</td>
-                    <td>{prod.rating}</td>
+                    <td>
+                      {[...Array(prod.rating).keys()].map((n) => (
+                        <i className="fa fa-star text-warning"></i>
+                      ))}
+                      {[...Array(5 - prod.rating).keys()].map((n) => (
+                        <i className="fa fa-star-o text-warning"></i>
+                      ))}
+                    </td>
                   </tr>
                 ))}
               </tbody>
