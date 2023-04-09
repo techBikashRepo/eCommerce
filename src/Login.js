@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "./UserContext";
 
@@ -7,6 +7,8 @@ const Login = () => {
   var [password, setPassword] = useState("Admin@123");
 
   let userContext = useContext(UserContext);
+
+  let myEmailRef = useRef();
 
   let [errors, setErrors] = useState({
     email: [],
@@ -76,12 +78,14 @@ const Login = () => {
       if (response.ok) {
         let responseBody = await response.json();
         if (responseBody.length > 0) {
-          userContext.setUser({
-            ...userContext.user,
-            isLoggedIn: true,
-            currentUserId: responseBody[0].id,
-            currentUserName: responseBody[0].fullName,
-            currentUserRole: responseBody[0].role,
+          userContext.dispatch({ type: "somework", payload: { x: 10, y: 20 } });
+          userContext.dispatch({
+            type: "login",
+            payload: {
+              currentUserId: responseBody[0].id,
+              currentUserName: responseBody[0].fullName,
+              currentUserRole: responseBody[0].role,
+            },
           });
 
           if (responseBody[0].role === "user") {
@@ -117,6 +121,7 @@ const Login = () => {
 
   useEffect(() => {
     document.title = "Login - eCommerce";
+    myEmailRef.current.focus();
   }, []);
 
   return (
@@ -142,6 +147,7 @@ const Login = () => {
                 name="email"
                 id="email"
                 placeholder="Enter Your Email"
+                ref={myEmailRef}
                 onChange={(event) => {
                   setEmail(event.target.value);
                 }}

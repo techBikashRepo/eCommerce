@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { CategoriesService, BrandsService, SortService } from "./Service";
 
 const ProductsList = () => {
@@ -50,11 +50,11 @@ const ProductsList = () => {
   }, [search]);
 
   // Get filtered Brands Name
-  let filteredProducts = (() => {
+  let filteredProducts = useMemo(() => {
     return originalProducts.filter(
       (prod) => prod.brand.brandName.indexOf(selectedBrand) >= 0
     );
-  })();
+  }, [originalProducts, selectedBrand]);
 
   // When user clicks on Column Name to sort
   let onSortColumnNameClick = (event, columnName) => {
@@ -108,7 +108,7 @@ const ProductsList = () => {
               <span className="badge badge-secondary">{products.length}</span>
             </h4>
           </div>
-          <div className="col-lg-9">
+          <div className="col-lg-6">
             <input
               type="search"
               placeholder="Search"
@@ -119,6 +119,22 @@ const ProductsList = () => {
                 setSearch(event.target.value);
               }}
             />
+          </div>
+          <div className="col-lg-3">
+            <select
+              className="form-control"
+              value={selectedBrand}
+              onChange={(event) => {
+                setSelectedBrand(event.target.value);
+              }}
+            >
+              <option value="">All Brands</option>
+              {brands.map((brand) => (
+                <option value={brand.brandName} key={brand.id}>
+                  {brand.brandName}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
       </div>
@@ -144,10 +160,10 @@ const ProductsList = () => {
                     <td>{prod.category.categoryName}</td>
                     <td>
                       {[...Array(prod.rating).keys()].map((n) => (
-                        <i className="fa fa-star text-warning"></i>
+                        <i className="fa fa-star text-warning" key={n}></i>
                       ))}
                       {[...Array(5 - prod.rating).keys()].map((n) => (
-                        <i className="fa fa-star-o text-warning"></i>
+                        <i className="fa fa-star-o text-warning" key={n}></i>
                       ))}
                     </td>
                   </tr>

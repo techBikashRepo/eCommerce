@@ -1,4 +1,5 @@
 import "./App.css";
+import { useReducer } from "react";
 import { Routes, Route } from "react-router-dom";
 import Login from "./Login";
 import Register from "./Register";
@@ -8,17 +9,40 @@ import NavBar from "./NavBar";
 import Store from "./Store";
 import ProductsList from "./ProductsList";
 import { UserContext } from "./UserContext";
-import { useState } from "react";
+
+let initialUser = {
+  isLoggedIn: false,
+  currentUserId: null,
+  currentUserName: null,
+  currentUserRole: null,
+};
+// Reducer
+let reducer = (state, action) => {
+  switch (action.type) {
+    case "login":
+      return {
+        isLoggedIn: true,
+        currentUserId: action.payload.currentUserId,
+        currentUserName: action.payload.currentUserName,
+        currentUserRole: action.payload.currentUserRole,
+      };
+
+    case "logou":
+      return {
+        isLoggedIn: false,
+        currentUserId: null,
+        currentUserName: null,
+        currentUserRole: null,
+      };
+    default:
+      return state;
+  }
+};
 
 const App = () => {
-  let [user, setUser] = useState({
-    isLoggedIn: false,
-    currentUserId: null,
-    currentUserName: null,
-    currentUserRole: null,
-  });
+  let [user, dispatch] = useReducer(reducer, initialUser);
   return (
-    <UserContext.Provider value={{ user, setUser }}>
+    <UserContext.Provider value={{ user, dispatch }}>
       <NavBar />
       <div className="container-fluid">
         <Routes>

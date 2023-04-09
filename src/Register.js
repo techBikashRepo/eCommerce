@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import { UserContext } from "./UserContext";
 import { useNavigate } from "react-router-dom";
 
 let Register = () => {
   let userContext = useContext(UserContext);
+  let registerEmailRef = useRef();
   let [state, setState] = useState({
     email: "",
     password: "",
@@ -127,6 +128,7 @@ let Register = () => {
   //executes only once - on initial render =  componentDidMount
   useEffect(() => {
     document.title = "Register - eCommerce";
+    registerEmailRef.current.focus();
   }, []);
 
   let onRegisterClick = async () => {
@@ -161,12 +163,13 @@ let Register = () => {
         setMessage(
           <span className="text-success">Successfully Registered</span>
         );
-        userContext.setUser({
-          ...userContext.user,
-          isLoggedIn: true,
-          currentUserId: responseBody.id,
-          currentUserName: responseBody.fullName,
-          currentUserRole: responseBody.role,
+        userContext.dispatch({
+          type: "login",
+          payload: {
+            currentUserId: responseBody.id,
+            currentUserName: responseBody.fullName,
+            currentUserRole: responseBody.role,
+          },
         });
         navigate("/dashboard");
       } else {
@@ -230,6 +233,7 @@ let Register = () => {
                   name="email"
                   id="email"
                   value={state.email}
+                  ref={registerEmailRef}
                   onChange={(event) => {
                     setState({
                       ...state,

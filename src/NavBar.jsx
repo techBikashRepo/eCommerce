@@ -11,12 +11,8 @@ let NavBar = () => {
   const navigate = useNavigate();
   let onLogoutClick = (event) => {
     event.preventDefault();
-    userContext.setUser({
-      ...userContext.user,
-      isLoggedIn: false,
-      currentUserId: null,
-      currentUserName: null,
-      currentUserRole: null,
+    userContext.dispatch({
+      type: "logout",
     });
     navigate("/");
   };
